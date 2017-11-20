@@ -1,7 +1,11 @@
 package repoclient;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.ConnectException;
+
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -31,8 +35,15 @@ public class MyMain {
 			System.out.println("No Parameter Passed. Please Pass Only one Parameter Repo Name to Be Created");
 			System.exit(0);
 		}
-		
 		try {
+			readConfigurations();
+		} catch (org.apache.commons.configuration2.ex.ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*try {
+			
+			
 			System.out.println(
 					MyMain.createRepository(new RepoCreationRequest(args[0], SCMID, true), HOST_PORT + API_ENDPOINT));
 			System.out.println(MyMain.executeRepoFetch(HOST_PORT + API_ENDPOINT));
@@ -42,6 +53,19 @@ public class MyMain {
 			System.out.println("IO Exception connecting to :" + HOST_PORT);
 		} catch (Exception e) {
 			System.out.println("Exception connecting to :" + HOST_PORT);
+		}*/
+	}
+
+	private static void readConfigurations() throws org.apache.commons.configuration2.ex.ConfigurationException {
+		Configurations configs = new Configurations();
+		try
+		{
+		    Configuration config = configs.properties(new File("repo.properties"));
+		    System.out.println(config.getString("api_endpoint"));
+		}
+		catch (ConfigurationException cex)
+		{
+			System.out.println("Exception connecting to :" + cex);
 		}
 	}
 
@@ -54,7 +78,7 @@ public class MyMain {
 		return toPrettyPrintString(response.body().string());
 	}
 
-	static String createRepository(RepoCreationRequest repoCreateRequest, String url) throws IOException {
+	public static String createRepository(RepoCreationRequest repoCreateRequest, String url) throws IOException {
 		OkHttpClient client = new OkHttpClient();
 
 		Gson gson = new Gson();
